@@ -1,0 +1,8 @@
+# JetBrains
+.idea/*
+
+# Exlude docs from the project
+*/docs/*
+
+# Exclude helper files
+exclude/*
