@@ -1,0 +1,130 @@
+<?php
+
+/**
+ * Implements hook_permissions()
+ */
+function project15a_permission() {
+    return array(
+        'administer project15a' => array(
+            'title' => t('Access Project 15A'),
+            'description' => t('Perform administration tasks for Project 15A.')
+        )
+    );
+}
+/**
+ * Implements hook_menu()
+ */
+function project15a_menu() {
+    $items['admin/config/project15a'] = array(
+        'title' => 'Project 15A settings',
+        'type' => MENU_NORMAL_ITEM,
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('project15a_admin_form'),
+        'access arguments' => array('administer project15a')
+    );
+    return $items;
+}
+
+/**
+ * Administer form for Cron Monitor
+ */
+function project15a_admin_form($form, &$form_state) {
+
+    $form['project15a_subject'] = array(
+        '#type' => 'textfield',
+        '#title' => t('E-mail subject'),
+        '#default_value' => variable_get('project15a_subject', '')
+    );
+
+    $form['project15a_email'] = array(
+        '#type' => 'textfield',
+        '#title' => t('E-mail address'),
+        '#attributes' => array(
+          ' type' => 'email'
+        ),
+        '#default_value' => variable_get('project15a_email', '')
+    );
+
+  $form['project15a_weekdays'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Send on...'),
+    '#options' => project15a_get_weekdays(),
+    '#default_value' => variable_get('project15a_weekdays', array())
+  );
+
+    return system_settings_form($form);
+}
+
+/**
+ * Implements hook_cron().
+ */
+function project15a_cron() {
+  watchdog('cron_report',
+    t('Cron ran at %time'),
+    array('%time' => date("Y-m-d h:i:sa")),
+    WATCHDOG_NOTICE
+  );
+
+  // send report e-mail
+  project15a_send_report();
+}
+
+/**
+ * Implements hook_mail().
+ */
+function project15a_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'cron_report':
+      $message['subject'] = variable_get('project15a_subject', 'Cron Report');
+      $nodes = project15a_get_all_published_nodes();
+      foreach ($nodes as $node) {
+          $nid = $node->nid;
+          $title = $node->title;
+          $url = url('node/' . $nid, array('absolute' => TRUE));
+          $message['body'][] = "<a href='$url'>$title</a>";
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+
+/* HELPERS */
+function project15a_get_weekdays() {
+  return array(
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  );
+}
+
+function project15a_get_all_published_nodes() {
+
+  $result = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('status', NODE_PUBLISHED)
+    ->execute()
+    ->fetchAll(PDO::FETCH_COLUMN);
+
+    if ($result) {
+        return node_load_multiple($result);
+    } else {
+        return array();
+    }
+}
+
+function project15a_send_report() {
+    $email = variable_get('project15a_email', '');
+    if ($email) {
+        $weekdays = variable_get('project15a_weekdays', array());
+        $send_today = in_array(strval(date('w')), $weekdays, true);
+        if ($send_today) {
+            drupal_mail('project15a', 'cron_report', $email, language_default());
+        }
+    }
+}

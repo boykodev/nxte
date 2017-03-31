@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * @file
+ * project11b.module
+ */
+
+module_load_include('inc', 'project11b', 'project11b.form');
+module_load_include('inc', 'project11b', 'project11b.block');
+module_load_include('inc', 'project11b', 'project11b.helpers');
+module_load_include('inc', 'project11b', 'project11b.settings');

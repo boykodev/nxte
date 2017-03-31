@@ -1,0 +1,86 @@
+<?php
+
+/**
+ * Create table for the module
+ */
+function project11a_schema() {
+  $schema['project11a_data'] = array(
+    'description' => 'Table for storing project11a module data',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary ID',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'user_id' => array(
+        'description' => 'ID of the user',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'node_id' => array(
+        'description' => 'ID of the node',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'node_type' => array(
+        'description' => 'Type of the node',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+      'timestamp' => array(
+        'description' => 'Unix timestamp',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'ip_address' => array(
+        'description' => 'ID address of the user',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_update_N()
+ * Version 1.01
+ */
+function project11a_update_7101() {
+  $result = db_select('project11a_data', 'data')
+    ->distinct()
+    ->fields('data', array('node_id'))
+    ->execute()
+    ->fetchAll(PDO::FETCH_COLUMN);
+
+  if ($result) {
+    foreach ($result as $node_id) {
+      $node = node_load($node_id);
+      $is_deleted = !$node;
+      $is_unpublished = !$is_deleted &&
+        ($node->status == NODE_NOT_PUBLISHED);
+
+      if ($is_deleted || $is_unpublished) {
+        _project11a_delete_records($node_id);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_update_N()
+ * Version 1.02
+ */
+function project11a_update_7102() {
+  db_add_field('project11a_data', 'node_type', array(
+    'description' => 'Type of the node',
+    'type' => 'varchar',
+    'length' => '255',
+    'not null' => TRUE,
+    'default' => 'default'
+  ));
+}

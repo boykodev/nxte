@@ -1,0 +1,5 @@
+name = "Project 11A"
+description  = "Module for project 11A"
+core = "7.x"
+version = "7.x-1.02"
+configure = admin/config/project11a

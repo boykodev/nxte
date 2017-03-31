@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * Create table for the module
+ */
+function project11b_schema() {
+  $schema[PROJECT11B_TABLE_NAME] = array(
+    'description' => 'Table for storing project11b module data',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Primary ID',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'fname' => array(
+        'description' => 'First name',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+      'lname' => array(
+        'description' => 'Last name',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+      'gender' => array(
+        'description' => 'Gender',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'timestamp' => array(
+        'description' => 'Unix timestamp',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'ip_address' => array(
+        'description' => 'ID address',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}

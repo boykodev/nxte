@@ -1,0 +1,6 @@
+name = "Project 15A"
+description  = "Project 15A module"
+core = "7.x"
+php = "5.2.4"
+version = "7.x-1.0"
+configure = admin/config/project15a

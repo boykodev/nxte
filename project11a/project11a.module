@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * project11a.module
+ */
+
+module_load_include('inc', 'project11a', 'project11a.main');
+module_load_include('inc', 'project11a', 'project11a.settings');
+module_load_include('inc', 'project11a', 'project11a.cron');
+
+/**
+ * Debug module functionality
+ */
+function project11a_debug() {
+}
+//project11a_debug();
