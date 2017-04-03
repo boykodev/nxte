@@ -1,0 +1,166 @@
+<?php
+
+/**
+ * @file
+ * project18.module
+ */
+
+define('PROJECT18_BLOCK_TITLE', 'List of nodes');
+
+/**
+ * Implements hook_menu().
+ */
+function project18_menu() {
+  $items = array();
+
+  $items['ajax-refresh/%'] = array(
+    'title' => 'Ajax test callback',
+    'type' => MENU_CALLBACK,
+    'page callback' => 'project18_list_ajax',
+    'page arguments' => array(1),
+    'access arguments' => array('access content')
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_block_info()
+ */
+function project18_block_info() {
+  $blocks['listblock'] = array(
+    'info' => t(PROJECT18_BLOCK_TITLE),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view()
+ */
+function project18_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'listblock':
+      $block['subject'] = t(PROJECT18_BLOCK_TITLE);
+      $block['content'] = project18_list();
+      break;
+  }
+  return $block;
+}
+
+function project18_list() {
+  $nodes = project18_get_random_nodes();
+  $titles = project18_get_node_titles($nodes);
+
+  // Add as a library
+  drupal_add_library('project18', 'project18_block', TRUE);
+
+//  Add JS and CSS separately
+//  drupal_add_css(drupal_get_path('module', 'project18') . '/css/project18.css',
+//    array('group' => CSS_DEFAULT, 'every_page' => TRUE));
+//  drupal_add_js(drupal_get_path('module', 'project18') . '/js/ajax_refresh.js');
+
+  $output = array(
+    'title' => array(
+      '#type' => 'markup',
+      '#markup' => '<p>This is the list of random nodes...</p>',
+    ),
+    'ajax_link' => array(
+      '#type' => 'link',
+      '#title' => t('Refresh'),
+      '#href' => 'ajax-refresh/nojs',
+      '#prefix' => "<div id='ajax_link'>",
+      '#suffix' => "</div>",
+      '#ajax' => array(
+        'effect' => 'fade',
+      )
+    ),
+    'list' => array(
+      '#items' => $titles,
+      '#theme' => 'item_list',
+      '#attributes' => array(
+        'class' => array('project18-titles-list')
+      )
+    )
+  );
+
+  return $output;
+}
+
+function project18_list_ajax($mode) {
+  if ($mode == 'ajax') {
+    $commands = array();
+
+    $nodes = project18_get_random_nodes();
+    $titles = project18_get_node_titles($nodes);
+
+    $html = '';
+    foreach ($titles as $title) {
+      $html .= "<li>$title</li>";
+    }
+
+    $commands[] = ajax_command_html('.project18-titles-list', $html, array('total' => count($titles)));
+    // implementing as a function
+//    $commands[] = ajax_command_invoke(NULL, 'ajaxRefresh', array(count($titles)));
+    ajax_deliver(array('#type' => 'ajax', '#commands' => $commands));
+  }
+}
+
+/**
+ * Implements hook_library().
+ */
+function project18_library() {
+  $libraries['project18_block'] = array(
+    'title' => 'Project 18 Block library',
+    'website' => '',
+    'version' => '',
+    'js' => array(
+      drupal_get_path('module', 'project18') . '/js/ajax_refresh.js' => array()
+    ),
+    'css' => array(
+      drupal_get_path('module', 'project18') . '/css/project18.css' => array(
+        'type' => 'file'
+      ),
+    ),
+    'dependencies' => array(
+      // Require jQuery UI core by System module.
+      array('system', 'ui'),
+      array('system', 'ui.dialog'),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Helpers
+ */
+
+function project18_get_random_nodes() {
+  $type = 'test_type';
+  $amount = mt_rand(1, 50);
+
+  $nids = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->fields('n', array('type'))
+    ->condition('n.type', $type)
+    ->range(0, $amount)
+    ->orderRandom()
+    ->execute()
+    ->fetchCol();
+
+  return node_load_multiple($nids);
+}
+
+function project18_get_node_titles(&$nodes) {
+  $titles = array();
+
+  foreach ($nodes as $nid => $node) {
+    $titles[$nid] = $node->title;
+  }
+
+  return $titles;
+}

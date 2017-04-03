@@ -1,0 +1,41 @@
+#block-project18-listblock div {
+    width: 200px;
+}
+
+#block-project18-listblock h2 {
+    font: 400 30px/1.5 Helvetica, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#block-project18-listblock ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#block-project18-listblock li {
+    font: 200 15px/1.5 Helvetica, Verdana, sans-serif;
+}
+
+#block-project18-listblock li:last-child {
+    border: none;
+}
+
+#block-project18-listblock li a {
+    text-decoration: none;
+    color: #000;
+    display: block;
+    width: 200px;
+
+    -webkit-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -moz-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -o-transition: font-size 0.3s ease, background-color 0.3s ease;
+    -ms-transition: font-size 0.3s ease, background-color 0.3s ease;
+    transition: font-size 0.3s ease, background-color 0.3s ease;
+}
+
+#block-project18-listblock li a:hover {
+    font-size: 30px;
+    background: #f6f6f6;
+}
