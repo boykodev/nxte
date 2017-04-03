@@ -1,0 +1,6 @@
+<?php
+
+function project21_schema() {
+  $schema['cache_nxte'] = drupal_get_schema_unprocessed('system', 'cache');
+  return $schema;
+}

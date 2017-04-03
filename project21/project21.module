@@ -1,0 +1,131 @@
+<?php
+
+/**
+ * @file
+ * project21.module
+ */
+
+define('PROJECT21_BLOCK_TITLE', 'Random nodes');
+define('PROJECT21_CACHE_TABLE', 'cache_nxte');
+
+module_load_include('inc', 'project21', 'project21.settings');
+
+/**
+ * Implements hook_block_info()
+ */
+function project21_block_info() {
+  $blocks['listblock'] = array(
+    'info' => t(PROJECT21_BLOCK_TITLE),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view()
+ */
+function project21_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'listblock':
+      $block['subject'] = t(PROJECT21_BLOCK_TITLE);
+      $block['content'] = project21_list();
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function project21_node_update($node) {
+  project21_clear_cache_by_nid($node->nid);
+}
+
+function project21_list() {
+  $data = project21_get_random_nodes_data();
+
+  $output = array(
+    'title' => array(
+      '#type' => 'markup',
+      '#markup' => '<p>This nodes are being cached</p>',
+    ),
+    'list' => array(
+      '#items' => $data,
+      '#theme' => 'item_list',
+      '#attributes' => array(
+        'class' => array('project21-titles-list')
+      )
+    )
+  );
+
+  return $output;
+}
+
+/* MODULE CACHE REMOVE */
+// THANKS http://drupal.stackexchange.com/a/168066/73346
+
+/**
+ * Implements hook_flush_caches().
+ */
+function project21_flush_caches() {
+  register_shutdown_function('project21_cache_rebuild');
+  return array();
+}
+
+/**
+ * Rebuild expensive cache items that need to be rebuilt immediately.
+ */
+function project21_cache_rebuild() {
+  return db_truncate(PROJECT21_CACHE_TABLE)->execute();
+}
+
+/**
+ * Helpers
+ */
+
+function project21_get_random_nodes() {
+  $type = 'test_type';
+  $amount = mt_rand(1, 10);
+
+  $nids = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->fields('n', array('type'))
+    ->condition('n.type', $type)
+    ->range(0, $amount)
+    ->orderRandom()
+    ->execute()
+    ->fetchCol();
+
+  return node_load_multiple($nids);
+}
+
+function project21_get_random_nodes_data() {
+  $data = array();
+  $nodes = project21_get_random_nodes();
+
+  foreach ($nodes as $nid => $node) {
+    if ($cache = cache_get("node_data_$nid", PROJECT21_CACHE_TABLE)) {
+      $value = $cache->data;
+    }
+    else {
+      $title = $node->title;
+      $updated = date("H:i Y/m/d ", $node->changed);
+      $value = sprintf("%s (%s)", $title, $updated);
+    }
+
+    cache_set("node_data_$nid", $value, PROJECT21_CACHE_TABLE);
+
+    $data[$nid] = $value;
+  }
+
+  return $data;
+}
+
+function project21_clear_cache_by_nid($nid) {
+  if ($cache = cache_get("node_data_$nid", PROJECT21_CACHE_TABLE)) {
+    cache_clear_all("node_data_$nid", PROJECT21_CACHE_TABLE);
+  }
+}
