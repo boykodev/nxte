@@ -1,0 +1,52 @@
+<?php
+
+// add module settings to config
+module_load_include('inc', 'project23', 'project23.settings');
+// create block for text
+module_load_include('inc', 'project23', 'project23.block');
+
+/**
+ * Implements hook_tokens().
+ */
+function project23_tokens($type, $tokens) {
+  $replacements = array();
+
+  if ($type == 'input') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'first':
+          $replacements[$original] = variable_get('project23_input1', '');
+          break;
+        case 'second':
+          $replacements[$original] = variable_get('project23_input2', '');
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function project23_token_info() {
+  $info['types']['input'] = array(
+    'name' => t('Input values'),
+    'description' => t('Tokens related to input values'),
+    'needs-data' => 'input'
+  );
+
+  $info['tokens']['input'] = array(
+    'first' => array(
+      'name' => t('Input field 1'),
+      'description' => t('The value of first input'),
+    ),
+    'second' => array(
+      'name' => t('Input field 2'),
+      'description' => t('The value of second input'),
+    ),
+  );
+
+  return $info;
+}
