@@ -1,0 +1,4 @@
+<?php
+
+// Add Rules API custom rules
+module_load_include('inc', 'project22', 'project22.rules');
