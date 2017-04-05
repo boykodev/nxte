@@ -1,0 +1,56 @@
+<?php
+
+// add module settings to config
+module_load_include('inc', 'project24x', 'project24x.settings');
+
+/**
+ * Implements hook_project24_node_block().
+ */
+function project24x_project24_node_block($nodes) {
+  foreach ($nodes as $nid => $node) {
+    $node->title = "Node $nid";
+  }
+}
+
+/**
+ * Implementation of hook_query_TAG_alter
+ * Add support for random order
+ */
+function project24x_query_random_alter($query) {
+  $query->orderRandom();
+}
+
+/**
+ * Implements hook_project24_nodes_order_alter().
+ */
+function project24x_project24_nodes_order_alter(&$nids) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node')
+    ->propertyCondition('nid', $nids);
+
+  // sorting and ordering
+  $order_option = variable_get('project24x_order_option', PROJECT24X_ORDER_NONE);
+  $sort_option = variable_get('project24x_sort_option', 'ASC');
+
+  switch ($order_option) {
+    case PROJECT24X_ORDER_NID:
+      $query->propertyOrderBy('nid', $sort_option);
+      break;
+    case PROJECT24X_ORDER_CREATED:
+      $query->propertyOrderBy('created', $sort_option);
+      break;
+    case PROJECT24X_ORDER_UPDATED:
+      $query->propertyOrderBy('changed', $sort_option);
+      break;
+    case PROJECT24X_ORDER_RANDOM:
+      $query->addTag('random');
+      break;
+    case PROJECT24X_ORDER_NONE:
+    default:
+      break;
+  }
+
+  $result = $query->execute();
+
+  $nids = array_keys($result['node']);
+}

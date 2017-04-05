@@ -1,0 +1,6 @@
+<?php
+
+// add module settings to config
+module_load_include('inc', 'project24', 'project24.settings');
+// create block for text
+module_load_include('inc', 'project24', 'project24.block');

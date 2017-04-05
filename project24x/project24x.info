@@ -1,0 +1,7 @@
+name = "Project 24x"
+description  = "Module for project 24, that uses hooks from project24 module"
+core = "7.x"
+php = "5.2.4"
+version = "7.x-1.0"
+dependencies[] = project24
+configure = admin/config/project24x
