@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * project25.module
+ *
+ * Module implements JSON API for getting various node data
+ *
+ * Endpoints:
+ *  api/node/{nid}
+ *  - Get node by id
+ *
+ *  api/node/random
+ *  - Get random node
+ *
+ *  api/node/random/{type}
+ *  - Get random node by type
+ *
+ *  api/node/list
+ *  - Get list of all nodes
+ *  @param from - specify range start (optional)
+ *  @param to - specify range finish (optional)
+ *
+ *  api/node/list/{type}
+ *  - Get list of all nodes by type
+ *  @param from - specify range start (optional)
+ *  @param to - specify range finish (optional)
+ *
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function project25_menu() {
+  $items['api/node/random'] = array(
+    'page callback' => 'project25_callback_random_single',
+    'access arguments' => array('access content'),
+  );
+
+  $items['api/node/random/%'] = array(
+    'page callback' => 'project25_callback_random_of_type',
+    'page arguments' => array(3),
+    'access arguments' => array('access content'),
+  );
+
+  $items['api/node/list'] = array(
+    'page callback' => 'project25_callback_list',
+    'access arguments' => array('access content'),
+  );
+
+  $items['api/node/list/%'] = array(
+    'page callback' => 'project25_callback_list_of_type',
+    'page arguments' => array(3),
+    'access arguments' => array('access content'),
+  );
+
+  $items['api/node/%'] = array(
+    'page callback' => 'project25_callback_single',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+// callbacks for hook_menu
+module_load_include('inc', 'project25', 'project25.callbacks');
+// API endpoints
+module_load_include('inc', 'project25', 'project25.endpoints');
