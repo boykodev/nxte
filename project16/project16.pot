@@ -1,0 +1,98 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  project16.batch.inc: n/a
+#  project16.settings.inc: n/a
+#  project16.info: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2017-04-06 18:52+0300\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: project16.batch.inc:9
+msgid "Processing Export"
+msgstr ""
+
+#: project16.batch.inc:10
+msgid "Export is starting."
+msgstr ""
+
+#: project16.batch.inc:11
+msgid "Processed @current out of @total."
+msgstr ""
+
+#: project16.batch.inc:12
+msgid "Export has encountered an error."
+msgstr ""
+
+#: project16.batch.inc:81
+msgid "An error occurred while processing %error_operation with arguments: @arguments"
+msgstr ""
+
+#: project16.batch.inc:100
+msgid "Unable to create directory in file system. Check permissions and try again."
+msgstr ""
+
+#: project16.batch.inc:106
+msgid "Unable to write to file system. Check permissions and try again."
+msgstr ""
+
+#: project16.batch.inc:112
+msgid "Unable open file for writing. Check permissions and try again."
+msgstr ""
+
+#: project16.batch.inc:129
+msgid "Export complete. <a href=\"!url\">!filename</a>."
+msgstr ""
+
+#: project16.settings.inc:9
+msgid "Access Project 16"
+msgstr ""
+
+#: project16.settings.inc:10
+msgid "Perform administration tasks for Project 16."
+msgstr ""
+
+#: project16.settings.inc:35
+msgid "Match title"
+msgstr ""
+
+#: project16.settings.inc:36
+msgid "Export only nodes that have this text in title"
+msgstr ""
+
+#: project16.settings.inc:42
+msgid "Add CSV headers"
+msgstr ""
+
+#: project16.settings.inc:43
+msgid "Whether show headers in CSV export"
+msgstr ""
+
+#: project16.settings.inc:49
+msgid "Initiate Batch"
+msgstr ""
+
+#: project16.settings.inc:50
+msgid "Perform Batch task"
+msgstr ""
+
+#: project16.info:0
+msgid "Project 16"
+msgstr ""
+
+#: project16.info:0
+msgid "Module for project 16"
+msgstr ""
+
