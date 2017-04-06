@@ -1,0 +1,6 @@
+<?php
+
+// add settings form
+module_load_include('inc', 'project16', 'project16.settings');
+// manage batch tasks
+module_load_include('inc', 'project16', 'project16.batch');
