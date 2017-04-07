@@ -1,0 +1,136 @@
+<?php
+
+define('PROJECT26_BLOCK_TITLE', t('Map block'));
+
+/** -------------------------------------- **/
+/** -------- HOOK IMPLEMENTATIONS -------- **/
+/** -------------------------------------- **/
+
+/**
+ * Implements hook_block_info()
+ */
+function project26_block_info() {
+  $blocks['mapblock'] = array(
+    'info' => t(PROJECT26_BLOCK_TITLE),
+    'cache' => DRUPAL_NO_CACHE // make sure block is up to date
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view()
+ */
+function project26_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'mapblock':
+      $block['subject'] = t(PROJECT26_BLOCK_TITLE);
+      $block['content'] = project26_get_block();
+      break;
+  }
+  return $block;
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function project26_menu() {
+  $items['ajax/node/teaser/%'] = array(
+    'page callback' => 'project26_ajax_callback',
+    'page arguments' => array(3),
+    'access arguments' => array('access content'),
+  );
+  return $items;
+}
+
+/**
+ * Ajax page to retrieve node teaser
+ * @param $nid
+ */
+function project26_ajax_callback($nid) {
+  $node = node_load($nid);
+  // it looks better without tags
+  unset($node->field_tags);
+
+  // render node teaser
+  echo drupal_render(node_view($node, $teaser = 'teaser'));
+}
+
+/** -------------------------------------- **/
+/** ----- GOOGLE MAPS IMPLEMENTATION ----- **/
+/** -------------------------------------- **/
+
+/**
+ * Callback for a block
+ */
+function project26_get_block() {
+  global $base_url; // get base_url for JS
+  $nodes = node_load_multiple(array(), array('type' => 'location'));
+
+  $markers = array();
+  foreach ($nodes as $node) {
+    $latitude = $node->field_location['und'][0]['latitude'];
+    $longitude = $node->field_location['und'][0]['longitude'];
+
+    $location_name = $node->field_location['und'][0]['name'];
+    $title = $location_name ? $location_name : $node->title;
+
+    $markers[] = array(
+      'nid' => $node->nid,
+      'lat' => $latitude + 0,
+      'lng' => $longitude + 0,
+      'title' => $title
+    );
+  }
+
+  // data passed to JS
+  $data = array(
+    'map_id' => 'project26_gmap',
+    'filter_id' => 'project26_filter_markers',
+    'ajax_url' => $base_url . '/ajax/node/teaser/',
+    'markers' => $markers,
+  );
+
+  project26_add_gmap_api();
+  project25_add_gmap_js($data);
+
+  $output = array(
+    'gmap' => array(
+      '#type' => 'markup',
+      '#markup' => '<div style="width: 100%; height: 150px" id="'.$data['map_id'].'"></div>'
+    ),
+    'filter' => array(
+      '#type' => 'markup',
+      '#markup' => '<input type="text" id="'.$data['filter_id'].'" placeholder="'.t('Enter text to filter markers').'">'
+    )
+  );
+
+  return drupal_render($output);
+}
+
+/**
+ * Helper function to load Google Maps API
+ */
+function project26_add_gmap_api() {
+  $api_key = 'YOUR_API_KEY';
+  $link = "https://maps.googleapis.com/maps/api/js?key=$api_key";
+
+  $js_params = array(
+    'type' => 'external',
+    'async' => TRUE,
+    'defer' => TRUE,
+  );
+
+  drupal_add_js($link, $js_params);
+}
+
+/**
+ * Helper function to load custom script with data
+ */
+function project25_add_gmap_js($data = array()) {
+  drupal_add_js(array('project26' => array('data' => $data)), array('type' => 'setting'));
+  drupal_add_js(drupal_get_path('module', 'project26') . '/js/gmap.js');
+}
